@@ -189,12 +189,12 @@ public class KdTree {
 
                 @java.lang.Override
                 public RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint) {
-                    return new RectHV(container.xmin(), splitPoint.x(), container.ymin(), container.ymax());
+                    return new RectHV(container.xmin(), container.ymin(), splitPoint.x(),  container.ymax());
                 }
 
                 @java.lang.Override
                 public RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint) {
-                    return new RectHV(splitPoint.x(), container.xmax(), container.ymin(), container.ymax());
+                    return new RectHV(splitPoint.x(), container.ymin(), container.xmax(),  container.ymax());
                 }
             }, Y {
                 @java.lang.Override
@@ -209,12 +209,12 @@ public class KdTree {
 
                 @java.lang.Override
                 public RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint) {
-                    return new RectHV(container.xmin(), container.xmax(), container.ymin(), splitPoint.y());
+                    return new RectHV(container.xmin(), container.ymin(), container.xmax(),  splitPoint.y());
                 }
 
                 @java.lang.Override
                 public RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint) {
-                    return new RectHV(container.xmin(), container.xmax(), splitPoint.y(), container.ymax());
+                    return new RectHV(container.xmin(), splitPoint.y(), container.xmax(), container.ymax());
                 }
             };
 
