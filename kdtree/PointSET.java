@@ -35,6 +35,7 @@ public class PointSET {
     }
 
     public boolean contains(Point2D p) {
+        if (p == null) throw new IllegalArgumentException();
         return t.contains(p);
     }
 
@@ -47,6 +48,7 @@ public class PointSET {
     }
 
     public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null) throw new IllegalArgumentException();
         ArrayList<Point2D> range = new ArrayList<Point2D>();
         for (Point2D p : t) {
             if (rect.contains(p)) range.add(p);
