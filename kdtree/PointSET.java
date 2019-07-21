@@ -58,9 +58,9 @@ public class PointSET {
         double shortestDist = Double.POSITIVE_INFINITY;
         Point2D nearest = null;
         for (Point2D q : t) {
-            double distance = p.distanceTo(q);
-            if (distance < shortestDist) {
-                shortestDist = distance;
+            double distanceSquared = p.distanceSquaredTo(q);
+            if (distanceSquared < shortestDist) {
+                shortestDist = distanceSquared;
                 nearest = q;
             }
         }

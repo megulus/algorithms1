@@ -180,10 +180,14 @@ public class KdTree {
         }
 
         private Point2D nearest(Point2D referencePoint, Point2D nearestSoFar) {
+            if (referencePoint == null) {
+                throw new IllegalArgumentException();
+            }
+
             if (nearestSoFar == null) {
                 nearestSoFar = this.point;
             } else {
-                if (referencePoint.distanceTo(this.point) < referencePoint.distanceTo(nearestSoFar)) {
+                if (referencePoint.distanceSquaredTo(this.point) < referencePoint.distanceSquaredTo(nearestSoFar)) {
                     nearestSoFar = this.point;
                 }
             }
@@ -200,8 +204,8 @@ public class KdTree {
 
         private Point2D nearestAfterSearchingSubtree(Node subtree, Point2D referencePoint, Point2D nearestSoFar) {
             if (subtree != null) {
-                double distanceToSubtree = subtree.boundingRectangle.distanceTo(referencePoint);
-                if (distanceToSubtree < referencePoint.distanceTo(nearestSoFar)) {
+                double distanceSquaredToSubtree = subtree.boundingRectangle.distanceSquaredTo(referencePoint);
+                if (distanceSquaredToSubtree < referencePoint.distanceSquaredTo(nearestSoFar)) {
                     Point2D nearestAfterSearchingSubtree = subtree.nearest(referencePoint, nearestSoFar);
                     if (nearestAfterSearchingSubtree != nearestSoFar) {
                         nearestSoFar = nearestAfterSearchingSubtree;
