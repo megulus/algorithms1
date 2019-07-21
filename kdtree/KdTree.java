@@ -4,10 +4,9 @@
  *  Description:
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Point2D;
-import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -40,8 +39,11 @@ public class KdTree {
         return root.contains(p);
     }
 
-    // public void draw() {}
-    //
+     public void draw() {
+        root.drawTree();
+        root.drawBoundingRectangle(root.boundingRectangle);
+     }
+
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) throw new IllegalArgumentException("grump!");
         ArrayList<Point2D> result = new ArrayList<>();
@@ -74,6 +76,7 @@ public class KdTree {
             Point2D p = new Point2D(x, y);
             kdtree.insert(p);
         }
+        kdtree.draw();
     }
 
 
@@ -90,13 +93,43 @@ public class KdTree {
              this.boundingRectangle = boundingRectangle;
         }
 
+        public void drawBoundingRectangle(RectHV boundingRectangle) {
+            double xmin = boundingRectangle.xmin();
+            double xmax = boundingRectangle.xmax();
+            double ymin = boundingRectangle.ymin();
+            double ymax = boundingRectangle.ymax();
+            StdDraw.setPenColor(Color.BLACK);
+            StdDraw.setPenRadius(0.02);
+            StdDraw.line(xmin, ymin, xmin, ymax);
+            StdDraw.line(xmin, ymax, xmax, ymax);
+            StdDraw.line(xmax, ymax, xmax, ymin);
+            StdDraw.line(xmax, ymin, xmin, ymin);
+        }
+
+        public void drawTree() {
+            this.drawPoint();
+            this.drawSplitLine();
+            if (this.lesser != null) this.lesser.drawTree();
+            if (this.greater != null) this.greater.drawTree();
+        }
+
+        public void drawPoint() {
+            StdDraw.setPenColor(Color.BLACK);
+            StdDraw.setPenRadius(0.01);
+            StdDraw.point(this.point.x(), this.point.y());
+        }
+
+        public void drawSplitLine() {
+            this.orientation.drawSplitLine(this.point, this.boundingRectangle);
+        }
+
         public void insert(Point2D p) {
             if (this.orientation.compare(p, this.point) < 0) {
                 if (this.lesser == null) {
                     this.lesser = new Node(
                             p,
                             this.orientation.nextLevelOrientation(),
-                            this.orientation.lesserSplitRectangle(this.boundingRectangle, p)
+                            this.orientation.lesserSplitRectangle(this.boundingRectangle, this.point)
                     );
                 } else {
                     this.lesser.insert(p);
@@ -106,7 +139,7 @@ public class KdTree {
                     this.greater = new Node(
                             p,
                             this.orientation.nextLevelOrientation(),
-                            this.orientation.greaterSplitRectangle(this.boundingRectangle, p)
+                            this.orientation.greaterSplitRectangle(this.boundingRectangle, this.point)
                     );
                 } else {
                     this.greater.insert(p);
@@ -196,6 +229,13 @@ public class KdTree {
                 public RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint) {
                     return new RectHV(splitPoint.x(), container.ymin(), container.xmax(),  container.ymax());
                 }
+
+                @Override
+                public void drawSplitLine(Point2D splitPoint, RectHV boundingRectangle) {
+                    StdDraw.setPenColor(Color.RED);
+                    StdDraw.setPenRadius();
+                    StdDraw.line(splitPoint.x(), boundingRectangle.ymin(), splitPoint.x(), boundingRectangle.ymax());
+                }
             }, Y {
                 @java.lang.Override
                 public int compare(Point2D one, Point2D two) {
@@ -216,12 +256,20 @@ public class KdTree {
                 public RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint) {
                     return new RectHV(container.xmin(), splitPoint.y(), container.xmax(), container.ymax());
                 }
+
+                @Override
+                public void drawSplitLine(Point2D splitPoint, RectHV boundingRectangle) {
+                    StdDraw.setPenColor(Color.BLUE);
+                    StdDraw.setPenRadius();
+                    StdDraw.line(boundingRectangle.xmin(), splitPoint.y(), boundingRectangle.xmax(), splitPoint.y());
+                }
             };
 
             public abstract int compare(Point2D one, Point2D two);
             public abstract Orientation nextLevelOrientation();
             public abstract RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint);
             public abstract RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint);
+            public abstract void drawSplitLine(Point2D splitPoint, RectHV boundingRectangle);
        }
     }
 }
