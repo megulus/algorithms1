@@ -8,7 +8,6 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.TreeSet;
 
 public class PointSET {
@@ -16,11 +15,11 @@ public class PointSET {
     private TreeSet<Point2D> t;
 
     public PointSET() {
-        t = new TreeSet<Point2D>();
+        t = new TreeSet<>();
     }
 
     public boolean isEmpty() {
-        return t.size() == 0;
+        return t.isEmpty();
     }
 
     public int size() {
@@ -37,18 +36,14 @@ public class PointSET {
     }
 
     public void draw() {
-        Iterator<Point2D> itr = t.iterator();
-        while (itr.hasNext()) {
-            Point2D p = itr.next();
+        for (Point2D p : t) {
             p.draw();
         }
     }
 
     public Iterable<Point2D> range(RectHV rect) {
         ArrayList<Point2D> range = new ArrayList<Point2D>();
-        Iterator<Point2D> itr = t.iterator();
-        while (itr.hasNext()) {
-            Point2D p = itr.next();
+        for (Point2D p : t) {
             if (rect.contains(p)) range.add(p);
         }
         return range;
@@ -56,10 +51,8 @@ public class PointSET {
 
     public Point2D nearest(Point2D p) {
         double shortestDist = Double.POSITIVE_INFINITY;
-        Iterator<Point2D> itr = t.iterator();
-        Point2D nearest = itr.next();
-        while (itr.hasNext()) {
-            Point2D q = itr.next();
+        Point2D nearest = null;
+        for (Point2D q : t) {
             double distance = p.distanceTo(q);
             if (distance < shortestDist) {
                 shortestDist = distance;

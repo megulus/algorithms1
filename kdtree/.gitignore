@@ -1,1 +1,7 @@
 .idea/
+*.class
+../.idea/
+../algs4.jar
+.DS_Store
+../queues/.idea/
+../8puzzle/.idea/
