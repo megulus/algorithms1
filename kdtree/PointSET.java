@@ -55,6 +55,10 @@ public class PointSET {
     }
 
     public Point2D nearest(Point2D p) {
+        if (p == null) {
+            throw new IllegalArgumentException();
+        }
+
         double shortestDist = Double.POSITIVE_INFINITY;
         Point2D nearest = null;
         for (Point2D q : t) {
