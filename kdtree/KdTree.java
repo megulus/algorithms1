@@ -4,9 +4,12 @@
  *  Description:
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -26,7 +29,7 @@ public class KdTree {
         if (!contains(p)) {
             size++;
             if (root == null) {
-                root = new Node(p, Node.Orientation.X, new RectHV(0, 0, 1, 1));
+                root = new Node(p, new Node.XOrientation(), new RectHV(0, 0, 1, 1));
             } else {
                 root.insert(p);
             }
@@ -87,17 +90,17 @@ public class KdTree {
         private final Orientation orientation;
         private final RectHV boundingRectangle;
 
-        public Node(Point2D p, Orientation o, RectHV boundingRectangle) {
+        public Node(Point2D p, Orientation nodeOrientation, RectHV nodeBoundingRectangle) {
              this.point = p;
-             this.orientation = o;
-             this.boundingRectangle = boundingRectangle;
+             this.orientation = nodeOrientation;
+             this.boundingRectangle = nodeBoundingRectangle;
         }
 
-        public void drawBoundingRectangle(RectHV boundingRectangle) {
-            double xmin = boundingRectangle.xmin();
-            double xmax = boundingRectangle.xmax();
-            double ymin = boundingRectangle.ymin();
-            double ymax = boundingRectangle.ymax();
+        public void drawBoundingRectangle(RectHV rectangle) {
+            double xmin = rectangle.xmin();
+            double xmax = rectangle.xmax();
+            double ymin = rectangle.ymin();
+            double ymax = rectangle.ymax();
             StdDraw.setPenColor(Color.BLACK);
             StdDraw.setPenRadius(0.02);
             StdDraw.line(xmin, ymin, xmin, ymax);
@@ -208,68 +211,72 @@ public class KdTree {
             return nearestSoFar;
         }
 
-        private enum Orientation {
-            X {
-                @java.lang.Override
-                public int compare(Point2D one, Point2D two) {
-                    return Double.compare(one.x(), two.x());
-                }
+        private interface Orientation {
+            int compare(Point2D first, Point2D second);
+            Orientation nextLevelOrientation();
+            RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint);
+            RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint);
+            void drawSplitLine(Point2D splitPoint, RectHV boundingRectangle);
+        }
 
-                @java.lang.Override
-                public Orientation nextLevelOrientation() {
-                    return Y;
-                }
+        private static class XOrientation implements Orientation {
+            @Override
+            public int compare(Point2D first, Point2D second) {
+                return Double.compare(first.x(), second.x());
+            }
 
-                @java.lang.Override
-                public RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint) {
-                    return new RectHV(container.xmin(), container.ymin(), splitPoint.x(),  container.ymax());
-                }
+            @Override
+            public Orientation nextLevelOrientation() {
+                return new YOrientation();
+            }
 
-                @java.lang.Override
-                public RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint) {
-                    return new RectHV(splitPoint.x(), container.ymin(), container.xmax(),  container.ymax());
-                }
+            @Override
+            public RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint) {
+                return new RectHV(container.xmin(), container.ymin(), splitPoint.x(),  container.ymax());
+            }
 
-                @Override
-                public void drawSplitLine(Point2D splitPoint, RectHV boundingRectangle) {
-                    StdDraw.setPenColor(Color.RED);
-                    StdDraw.setPenRadius();
-                    StdDraw.line(splitPoint.x(), boundingRectangle.ymin(), splitPoint.x(), boundingRectangle.ymax());
-                }
-            }, Y {
-                @java.lang.Override
-                public int compare(Point2D one, Point2D two) {
-                    return Double.compare(one.y(), two.y());
-                }
+            @Override
+            public RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint) {
+                return new RectHV(splitPoint.x(), container.ymin(), container.xmax(),  container.ymax());
+            }
 
-                @java.lang.Override
-                public Orientation nextLevelOrientation() {
-                    return X;
-                }
+            @Override
+            public void drawSplitLine(Point2D splitPoint, RectHV boundingRectangle) {
+                StdDraw.setPenColor(Color.RED);
+                StdDraw.setPenRadius();
+                StdDraw.line(splitPoint.x(), boundingRectangle.ymin(), splitPoint.x(), boundingRectangle.ymax());
+            }
 
-                @java.lang.Override
-                public RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint) {
-                    return new RectHV(container.xmin(), container.ymin(), container.xmax(),  splitPoint.y());
-                }
+        }
 
-                @java.lang.Override
-                public RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint) {
-                    return new RectHV(container.xmin(), splitPoint.y(), container.xmax(), container.ymax());
-                }
+        private static class YOrientation implements Orientation {
+            @Override
+            public int compare(Point2D first, Point2D second) {
+                return Double.compare(first.y(), second.y());
+            }
 
-                @Override
-                public void drawSplitLine(Point2D splitPoint, RectHV boundingRectangle) {
-                    StdDraw.setPenColor(Color.BLUE);
-                    StdDraw.setPenRadius();
-                    StdDraw.line(boundingRectangle.xmin(), splitPoint.y(), boundingRectangle.xmax(), splitPoint.y());
-                }
-            };
+            @Override
+            public Orientation nextLevelOrientation() {
+                return new XOrientation();
+            }
 
-            public abstract int compare(Point2D one, Point2D two);
-            public abstract Orientation nextLevelOrientation();
-            public abstract RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint);
-            public abstract RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint);
-            public abstract void drawSplitLine(Point2D splitPoint, RectHV boundingRectangle);
-       }
+            @Override
+            public RectHV lesserSplitRectangle(RectHV container, Point2D splitPoint) {
+                return new RectHV(container.xmin(), container.ymin(), container.xmax(),  splitPoint.y());
+            }
+
+            @Override
+            public RectHV greaterSplitRectangle(RectHV container, Point2D splitPoint) {
+                return new RectHV(container.xmin(), splitPoint.y(), container.xmax(), container.ymax());
+            }
+
+            @Override
+            public void drawSplitLine(Point2D splitPoint, RectHV container) {
+                StdDraw.setPenColor(Color.BLUE);
+                StdDraw.setPenRadius();
+                StdDraw.line(container.xmin(), splitPoint.y(), container.xmax(), splitPoint.y());
+            }
+
+        }
     }
 }

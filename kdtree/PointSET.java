@@ -4,15 +4,18 @@
  *  Description:
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
 public class PointSET {
 
-    private TreeSet<Point2D> t;
+    private final TreeSet<Point2D> t;
 
     public PointSET() {
         t = new TreeSet<>();
@@ -36,6 +39,8 @@ public class PointSET {
     }
 
     public void draw() {
+        StdDraw.setPenColor(Color.BLACK);
+        StdDraw.setPenRadius(0.01);
         for (Point2D p : t) {
             p.draw();
         }
@@ -63,6 +68,16 @@ public class PointSET {
     }
 
     public static void main(String[] args) {
-
+        // initialize the data structures from file
+        String filename = args[0];
+        In in = new In(filename);
+        PointSET set = new PointSET();
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            set.insert(p);
+        }
+        set.draw();
     }
 }
