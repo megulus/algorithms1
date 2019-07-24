@@ -14,12 +14,14 @@ import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class FourSum {
 
     private int[] a;
     private ArrayList<int[]> results = new ArrayList<>();
     private int len;
+    private HashMap<Integer, int[]> hm = new HashMap<>();
 
     public FourSum(int[] a) {
         if (a == null) throw new IllegalArgumentException("no null arrays!");
@@ -29,14 +31,42 @@ public class FourSum {
     }
 
     public void findFourSums() {
-        for (int i = 0; i <= len - 4; i++) {
-            if (Integer.hashCode(this.a[i] + this.a[i + 1]) == Integer
-                    .hashCode(this.a[i + 2] + this.a[i + 3])) {
-                int[] sum = new int[] { i, i + 1, i + 2, i + 3 };
-                results.add(sum);
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                // make sure indices are distinct
+                if (i != j) {
+                    // the sum of integers at i and j in a will be the key
+                    int key = this.a[i] + this.a[j];
+                    // value will be the indices themselves
+                    int[] value = new int[] { i, j };
+                    // sort the array so that we will not be comparing [1,2] to [2,1]
+                    Arrays.sort(value);
+                    // check whether key already in the hashmap
+                    if (hm.containsKey(key)) {
+                        int[] existing = hm.get(key);
+                        // check whether they are the same
+                        if (!existing.equals(value)) {
+                            // still have to check whether all 4 indices distinct - better way to do this?
+                            if ((existing[0] != value[0]) && (existing[0] != value[1]) && (
+                                    existing[1] != value[0]) && (existing[1] != value[1])) {
+                                // indices are distinct -- add to results
+                                int[] newresult = new int[] {
+                                        value[0], value[1], existing[0], existing[1]
+                                };
+                                results.add(newresult);
+                            }
+                            // indices are not distinct, add new value to hashmap
+                            hm.put(key, value);
+                        }
+                    }
+                    // key does not exist in hashmap, add new value to hashmap
+                    hm.put(key, value);
+                }
+                // i == j - ignore this pair
             }
         }
     }
+
 
     public ArrayList<int[]> getResults() {
         return results;
