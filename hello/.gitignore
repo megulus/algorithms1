@@ -1,3 +1,4 @@
 .lift/
 .idea/
 *.class
+./idea/workspace.xml

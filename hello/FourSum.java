@@ -32,37 +32,20 @@ public class FourSum {
 
     public void findFourSums() {
         for (int i = 0; i < len; i++) {
-            for (int j = 0; j < len; j++) {
-                // make sure indices are distinct
-                if (i != j) {
-                    // the sum of integers at i and j in a will be the key
-                    int key = this.a[i] + this.a[j];
-                    // value will be the indices themselves
-                    int[] value = new int[] { i, j };
-                    // sort the array so that we will not be comparing [1,2] to [2,1]
-                    Arrays.sort(value);
-                    // check whether key already in the hashmap
-                    if (hm.containsKey(key)) {
-                        int[] existing = hm.get(key);
-                        // check whether they are the same
-                        if (!existing.equals(value)) {
-                            // still have to check whether all 4 indices distinct - better way to do this?
-                            if ((existing[0] != value[0]) && (existing[0] != value[1]) && (
-                                    existing[1] != value[0]) && (existing[1] != value[1])) {
-                                // indices are distinct -- add to results
-                                int[] newresult = new int[] {
-                                        value[0], value[1], existing[0], existing[1]
-                                };
-                                results.add(newresult);
-                            }
-                            // indices are not distinct, add new value to hashmap
-                            hm.put(key, value);
-                        }
+            for (int j = i + 1; j < len; j++) {
+                int key = this.a[i] + this.a[j];
+                int[] value = new int[] { i, j };
+                if (hm.containsKey(key)) {
+                    int[] existing = hm.get(key);
+                    if ((existing[0] != value[0]) && (existing[0] != value[1]) && (
+                            existing[1] != value[0]) && (existing[1] != value[1])) {
+                        int[] newresult = new int[] {
+                                existing[0], existing[1], value[0], value[1]
+                        };
+                        results.add(newresult);
                     }
-                    // key does not exist in hashmap, add new value to hashmap
-                    hm.put(key, value);
                 }
-                // i == j - ignore this pair
+                hm.put(key, value);
             }
         }
     }
